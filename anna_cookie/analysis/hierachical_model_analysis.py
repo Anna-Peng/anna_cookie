@@ -28,7 +28,3 @@ plot_dendro.plot_TSNE_level(
     distance=distance_, df=df, cluster="isco_label", level=3, perplexity=10
 )
 
-
-4  # %%
-
-# %%
