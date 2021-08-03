@@ -16,7 +16,7 @@ from anna_cookie import PROJECT_DIR
 logger = logging.getLogger(__file__)
 
 
-def execute_flow(flow_file: Path, params: dict, metaflow_args: dict) -> int:
+def execute_flow(flow_file: Path, metaflow_args: dict) -> int:
     """Execute flow in `flow_file` with `params`.
     Args:
         flow_file: File containing metaflow
@@ -40,7 +40,7 @@ def execute_flow(flow_file: Path, params: dict, metaflow_args: dict) -> int:
             "--run-id-file",
             str(run_id_file),
             # PARAMS
-            *t.pipe(params.items(), chain.from_iterable, t.map(quote)),
+            # *t.pipe(params.items(), chain.from_iterable, t.map(quote)),
         ]
     )
     logger.info(cmd)
