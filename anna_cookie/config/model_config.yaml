@@ -1,12 +1,7 @@
+flows:
+  cluster_flow:
+    run_id: 1458
 preprocess:
   out_occ: occu_with_ESCO_processed.pkl
   out_skill: skills_en_processed.pkl
   run_id: 123
-
-flows:
-  # hierachical_model_analysis:
-  #   p: 5 # depth of the merged dendrogram
-  #   thresholds: [0.01, 0.0082, 0.005, 0.003]
-  #   figsize: [12, 20]
-  cluster_flow:
-    run_id: 1111

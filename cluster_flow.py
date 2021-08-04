@@ -34,73 +34,78 @@ class HierClusterFlow(FlowSpec):
     # for key,val in config['flows']['hierachical_model_analysis'].items():
     #     exec(key + '=val')
 
-    # thresholds_ = Parameter(
-    #     "thresholds_",
-    #     help="Thresholds setting for each level of hierachical cluster",
-    #     default=[0.01, 0.0082, 0.005, 0.003],
-    # )
-    # p = Parameter(
-    #     "p",
-    #     help="the depth of merged dendrogram",
-    #     type=int,
-    #     default=5,
-    # )
+    thresholds = Parameter(
+        "thresholds_",
+        help="Thresholds setting for each level of hierachical cluster",
+        default=[0.01, 0.0082, 0.005, 0.003],
+    )
+    p = Parameter(
+        "p",
+        help="the depth of merged dendrogram",
+        type=int,
+        default=5,
+    )
 
-    # figsize = Parameter(
-    #     "figsize",
-    #     help="figsize for plotting",
-    #     default=(12, 20),
-    # )
+    figsize = Parameter(
+        "figsize",
+        help="figsize for plotting",
+        default=(12, 20),
+    )
 
-    # cluster = Parameter(
-    #     "cluster",
-    #     help="cluster labels used to denote 2D tsne",
-    #     default="isco_label",  # or 'cluster_label'
-    # )
+    cluster = Parameter(
+        "cluster",
+        help="cluster labels used to denote 2D tsne, choose either 'isco_label' or 'custer_label'. ",
+        default="isco_label",  # or 'cluster_label'
+    )
 
     @step
     def start(self):
         """Load data and run the NLP pipeline, returning tokenised documents."""
+        print("\x1b[6;30;42m" + "hierichical modelling" + "\x1b[0m")
         self.model = HierModel()
         self.Mod_, self.distance_ = self.model.agg_model()
-        print("hierichical modelling")
         self.next(self.assign_label)
 
     @step
     def assign_label(self):
-        self.thresholds_ = [0.01, 0.0082, 0.005, 0.003]
-        linkage_ = self.model.get_linkage(self.Mod_)
-        labels_ = self.model.get_labels(linkage_, self.thresholds_)[0]
+        print("\x1b[6;30;42m" + "assign cluster labels to dataframe!" + "\x1b[0m")
+        self.linkage_ = self.model.get_linkage(self.Mod_)
+        labels_ = self.model.get_labels(self.linkage_, self.thresholds)[0]
         self.df = self.model.assign_label(labels_, colname="cluster_label")
-        print("assign cluster labels to dataframe!")
-        self.next(self.plots)
+        print(self.df.head(10))
+        self.next(self.plot_dendro)
 
     @step
-    def plots(self):
+    def plot_dendro(self):
+        print("\x1b[6;30;42m" + "plotting dendrogram!" + "\x1b[0m")
         plot_dendro.plot_dendrogram(
             self.linkage_,
             threshold=self.thresholds,
-            figsize=(12, 20),  # self.figsize,
-            p=5,  # self.p,
+            figsize=self.figsize,
+            p=self.p,
             truncate_mode="level",
         )
-        plot_dendro.plot_TSNE_level(
-            distance=self.distance_,
-            df=self.df,
-            cluster="isco_label",  # self.cluster,
-            level=3,
-            perplexity=10,
-        )
-        print("Plots!")
         self.next(self.end)
+
+    # @step
+    # def plot_tsne(self):
+    #     print("plotting tsne!")
+    #     plot_dendro.plot_TSNE_level(
+    #         distance=self.distance_,
+    #         df=self.df,
+    #         #cluster=self.cluster,
+    #         level=3,
+    #         perplexity=10,
+    #     )
+    #     print("Plots!")
+    #     self.next(self.end)
 
     @step
     def end(self):
-        print("Phew!")
+        print("\x1b[6;30;42m" + "Phew! SUCCESS!!!!!" + "\x1b[0m")
 
 
 #%%
 
 if __name__ == "__main__":
     HierClusterFlow(FlowSpec)
-# %%

@@ -1,11 +1,14 @@
-from scipy.cluster.hierarchy import dendrogram, fcluster, single, complete, linkage
+from scipy.cluster.hierarchy import dendrogram
 from sklearn.manifold import TSNE
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from anna_cookie import PROJECT_DIR
 
 
 def plot_dendrogram(linkage, threshold, figsize=(12, 20), p=5, truncate_mode="level"):
+    path = PROJECT_DIR / "outputs" / "figures"
+
     """the function plots dendrogram from the linkage array.
 
     Args:
@@ -35,12 +38,13 @@ def plot_dendrogram(linkage, threshold, figsize=(12, 20), p=5, truncate_mode="le
     plt.title("Hierarchical Clustering Dendrogram")
     plt.xlabel("Hamming Distance")
     plt.ylabel("Cluster Index or (cluster node size)")
-    plt.show()
+    plt.savefig(path / "dendro")
 
 
 def plot_TSNE_level(
     distance, df, cluster="isco_label", level=4, perplexity=20, random_state=4
 ):
+    path = PROJECT_DIR / "outputs" / "figures"
     """[summary]
 
     Args:
@@ -64,4 +68,4 @@ def plot_TSNE_level(
     fig, ax = plt.subplots(figsize=(20, 12))
     for name, points in groups:
         ax.scatter(points.x, points.y, label=name)
-    plt.show()
+    plt.savefig(path / "tsne")

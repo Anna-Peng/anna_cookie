@@ -11,7 +11,7 @@ def get_skill() -> pd.DataFrame:
         [DataFrame]: Return a dataframe
     """
     filepath = PROJECT_DIR / "inputs" / "data" / "skills_en.csv"
-    print(filepath)
+    # print(filepath)
     data = pd.read_csv(filepath)
     return data
 
@@ -24,7 +24,7 @@ def get_occupation() -> pd.DataFrame:
         [DataFrame]: Return a dataframe
     """
     filepath = PROJECT_DIR / "inputs" / "data" / "occupations_en.csv"
-    print(filepath)
+    # print(filepath)
     data = pd.read_csv(filepath)
     return data
 
@@ -36,7 +36,7 @@ def get_ESCO() -> dict:
         [json file]: [json file]
     """
     filepath = PROJECT_DIR / "inputs" / "data" / "ESCO_occup_skills.json"
-    print(filepath)
+    # print(filepath)
     with open(filepath, "r") as stream:
         try:
             data = json.load(stream)

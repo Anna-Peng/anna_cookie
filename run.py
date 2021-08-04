@@ -46,7 +46,6 @@ if __name__ == "__main__":
     # input_file = generate_input_data(match_threshold, params.get("n-docs", None))
 
     # cmd_params = {
-    #     f"--{k}": json.dumps(params[k])
     #     for k in ["n-gram", "entity-mappings", "n-process"]
     #     if k in params
     # }
@@ -57,7 +56,7 @@ if __name__ == "__main__":
         flow_file,
         # cmd_params,
         metaflow_args={
-            # "--datastore": "local",
+            "--datastore": "s3",
             # "--metadata": "local",
             # "--with": "batch:cpu=2,memory=32000",
             "--environment": "conda",

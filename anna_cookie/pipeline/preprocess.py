@@ -5,7 +5,6 @@ from anna_cookie import PROJECT_DIR
 
 
 def preprocess():
-    # filepath = PROJECT_DIR / "outputs" / "data"
     df_sk = get.get_skill()
     df_oc = get.get_occupation()
     df_esco = pd.DataFrame.from_dict(get.get_ESCO(), orient="index")
@@ -52,5 +51,3 @@ def preprocess():
     df_final = df_oc.join(df_esco, how="left")
 
     return df_final, df_sk
-    # df_final.to_pickle(filepath / "occu_with_ESCO_processed.pkl")
-    # df_sk.to_pickle(filepath / "skills_en_processed.pkl")
