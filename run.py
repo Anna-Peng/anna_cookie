@@ -59,7 +59,7 @@ if __name__ == "__main__":
         metaflow_args={
             # "--datastore": "local",
             # "--metadata": "local",
-            "--with": "batch:cpu=2,memory=32000",
+            # "--with": "batch:cpu=2,memory=32000",
             "--environment": "conda",
         },
     )

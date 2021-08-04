@@ -1,23 +1,21 @@
 #%%
-from anna_cookie.pipeline import preprocess, hierachical_model, plot_dendro
+from anna_cookie.pipeline import plot_dendro
+from anna_cookie.pipeline.hierachical_model import HierModel
 
 # Preprocess data and save into pickle files
 #%%
-# Script that preprocess Data into Pickle Files
-preprocess.preprocess()
-
-#%%
 # Construct Agglomerative Model and Distrance Matrix
-Mod_, distance_ = hierachical_model.Agg_model()
+model = HierModel()
+Mod_, distance_ = model.agg_model()
 
 #%%
-linkage_ = hierachical_model.get_linkage(model=Mod_)
+linkage_ = model.get_linkage(Mod_)
 # %%
 thresholds_ = [0.01, 0.0082, 0.005, 0.003]
-labels_, class_size_ = hierachical_model.get_labels(linkage_, thresholds_)
+labels_, class_size_ = model.get_labels(linkage_, thresholds_)
 #%%
 # Assign cluster labels to the pickle files
-df = hierachical_model.assign_label(labels_, colname="cluster_label")
+df = model.assign_label(labels_, colname="cluster_label")
 # %%
 # Visualise Result
 plot_dendro.plot_dendrogram(
@@ -27,4 +25,3 @@ plot_dendro.plot_dendrogram(
 plot_dendro.plot_TSNE_level(
     distance=distance_, df=df, cluster="isco_label", level=3, perplexity=10
 )
-

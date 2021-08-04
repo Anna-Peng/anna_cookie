@@ -14,70 +14,64 @@
 #%%
 # import toolz.curried as t
 from metaflow import FlowSpec, step, Parameter, IncludeFile, JSONType, conda_base
-from anna_cookie import config
-from anna_cookie.pipeline import preprocess, hierachical_model, plot_dendro
+from anna_cookie.pipeline import plot_dendro
+from anna_cookie.pipeline.hierachical_model import HierModel
 
 #%%
-# # @conda_base(
-#     libraries={
-#         "spacy": ">=3.0",
-#         "toolz": ">0.11",
-#         "gensim": ">=4.0",
-#         "spacy-model-en_core_web_lg": ">=3.0",
-#     },
-#     python="3.8",
-# )
-
-
+@conda_base(
+    libraries={
+        "scikit-learn": ">=0.24",
+        "scipy": ">=1.6",
+        "pandas": ">=1.2",
+        "numpy": ">=1.20",
+        "matplotlib": ">=3.4",
+        "pyyaml": ">=5.4",
+        "python-dotenv": ">=0.17",
+    },
+    python="3.8",
+)
 class HierClusterFlow(FlowSpec):
     # for key,val in config['flows']['hierachical_model_analysis'].items():
     #     exec(key + '=val')
 
-    thresholds_ = Parameter(
-        "thresholds_",
-        help="Thresholds setting for each level of hierachical cluster",
-        default=[0.01, 0.0082, 0.005, 0.003],
-    )
-    p = Parameter(
-        "p",
-        help="the depth of merged dendrogram",
-        type=int,
-        default=5,
-    )
+    # thresholds_ = Parameter(
+    #     "thresholds_",
+    #     help="Thresholds setting for each level of hierachical cluster",
+    #     default=[0.01, 0.0082, 0.005, 0.003],
+    # )
+    # p = Parameter(
+    #     "p",
+    #     help="the depth of merged dendrogram",
+    #     type=int,
+    #     default=5,
+    # )
 
-    figsize = Parameter(
-        "figsize",
-        help="figsize for plotting",
-        default=(12, 20),
-    )
+    # figsize = Parameter(
+    #     "figsize",
+    #     help="figsize for plotting",
+    #     default=(12, 20),
+    # )
 
-    cluster = Parameter(
-        "cluster",
-        help="cluster labels used to denote 2D tsne",
-        default="isco_label",  # or 'cluster_label'
-    )
+    # cluster = Parameter(
+    #     "cluster",
+    #     help="cluster labels used to denote 2D tsne",
+    #     default="isco_label",  # or 'cluster_label'
+    # )
 
     @step
     def start(self):
         """Load data and run the NLP pipeline, returning tokenised documents."""
-        preprocess.preprocess()
-        print("Pickle processed data in the output/data folder")
-        self.next(self.make_model)
-
-    @step
-    def make_model(self):
-        self.Mod_, self.distance_ = hierachical_model.Agg_model()
-        self.linkage_ = hierachical_model.get_linkage(model=self.Mod_)
-        self.labels_, self.class_size_ = hierachical_model.get_labels(
-            self.linkage_, self.thresholds_
-        )
+        self.model = HierModel()
+        self.Mod_, self.distance_ = self.model.agg_model()
         print("hierichical modelling")
-        # self.next(self.end)
         self.next(self.assign_label)
 
     @step
     def assign_label(self):
-        self.df = hierachical_model.assign_label(self.labels_, colname="cluster_label")
+        self.thresholds_ = [0.01, 0.0082, 0.005, 0.003]
+        linkage_ = self.model.get_linkage(self.Mod_)
+        labels_ = self.model.get_labels(linkage_, self.thresholds_)[0]
+        self.df = self.model.assign_label(labels_, colname="cluster_label")
         print("assign cluster labels to dataframe!")
         self.next(self.plots)
 
@@ -85,15 +79,15 @@ class HierClusterFlow(FlowSpec):
     def plots(self):
         plot_dendro.plot_dendrogram(
             self.linkage_,
-            threshold=self.thresholds_,
-            figsize=self.figsize,
-            p=self.p,
+            threshold=self.thresholds,
+            figsize=(12, 20),  # self.figsize,
+            p=5,  # self.p,
             truncate_mode="level",
         )
         plot_dendro.plot_TSNE_level(
             distance=self.distance_,
             df=self.df,
-            cluster=self.cluster,
+            cluster="isco_label",  # self.cluster,
             level=3,
             perplexity=10,
         )

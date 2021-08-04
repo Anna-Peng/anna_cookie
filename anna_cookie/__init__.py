@@ -38,5 +38,3 @@ config = get_yaml_config(_base_config_path)
 
 # BUCKET and METAFLOW_PROFILE
 load_dotenv(f"{PROJECT_DIR}/.env.shared")
-
-# %%
